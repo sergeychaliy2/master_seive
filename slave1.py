@@ -1,15 +1,20 @@
-import multiprocessing
-import os
+import requests
+from bs4 import BeautifulSoup
+import re
+
+def count_words_on_webpage(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
+        words = re.findall(r'\b\w+\b', soup.get_text(), re.IGNORECASE)
+        return len(words)
+    except Exception as e:
+        print(f"Error in slave 1: {e}")
+        return None
 
 if __name__ == "__main__":
     url = input("Enter the URL: ")
-    specific_words = input("Enter words: ").split(',')
-
-    # Запуск слейвов параллельно
-    with multiprocessing.Pool(processes=2) as pool:
-        result1 = pool.apply_async(os.system, ("python slave1.py",))
-        result2 = pool.apply_async(os.system, ("python slave2.py",))
-
-    # Получение результатов
-    result1.get()
-    result2.get()
+    word_count = count_words_on_webpage(url)
+    if word_count is not None:
+        print(f"Word count in slave 1: {word_count}")
