@@ -1,9 +1,6 @@
-FROM python:3.8
+FROM ubuntu:latest 
 
-RUN pip install requests beautifulsoup4 pymorphy2
+RUN apt-get update && apt-get -y install python3 python3-pip
+RUN python3 -m pip install beautifulsoup4 flask requests pymorphy2
 
-WORKDIR /app
-
-COPY . /app
-
-CMD ["python", "master.py"]
+COPY my_flask_app.py my_data_collector.py
